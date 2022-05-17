@@ -1,11 +1,12 @@
 from django.contrib.auth import get_user_model
-from django.db.models.constraints import UniqueConstraint
 from django.db import models
+from django.db.models.constraints import UniqueConstraint
 
 User = get_user_model()
 
 
 class Group(models.Model):
+    """Модель для групп сообщества."""
     title = models.CharField('Заголовочек', max_length=200)
     slug = models.SlugField('Слаг адрес', unique=True)
     description = models.TextField('Описание группы')
@@ -15,6 +16,7 @@ class Group(models.Model):
 
 
 class Post(models.Model):
+    """Посты сообщества."""
     text = models.TextField('Мысли великих')
     pub_date = models.DateTimeField(
         'Дата публикации',
@@ -47,6 +49,7 @@ class Post(models.Model):
 
 
 class Comment(models.Model):
+    """Коммментарии сообщества к постам."""
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='comments',
         verbose_name='Автор поста'
@@ -62,6 +65,7 @@ class Comment(models.Model):
 
 
 class Follow(models.Model):
+    """Подписки на авторов."""
     user = models.ForeignKey(
         User,
         related_name='follower',
