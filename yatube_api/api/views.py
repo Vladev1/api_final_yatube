@@ -1,8 +1,8 @@
 from api.serializers import (CommentSerializer, FollowSerializer,
                              GroupSerializer, PostSerializer)
 from django.shortcuts import get_object_or_404
-from posts.models import Follow, Group, Post
-from rest_framework import filters, permissions, viewsets
+from posts.models import User, Group, Post
+from rest_framework import filters, permissions, viewsets, mixins
 from rest_framework.throttling import ScopedRateThrottle
 
 from .pagination import PostPagination
@@ -46,7 +46,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
 
-class FollowViewSet(viewsets.ModelViewSet):
+class FollowViewSet(mixins.CreateModelMixin,
+                    mixins.ListModelMixin,
+                    mixins.RetrieveModelMixin,
+                    viewsets.GenericViewSet):
     """Отображение подписок."""
     serializer_class = FollowSerializer
     permission_classes = (permissions.IsAuthenticated, CustomPermission)
@@ -55,7 +58,8 @@ class FollowViewSet(viewsets.ModelViewSet):
     throttle_classes = (ScopedRateThrottle, )
 
     def get_queryset(self):
-        queryset = Follow.objects.filter(user=self.request.user)
+        follow = get_object_or_404(User, id=self.request.user.pk)
+        queryset = follow.follower.all()
         return queryset
 
     def perform_create(self, serializer):

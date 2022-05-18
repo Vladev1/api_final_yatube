@@ -8,7 +8,7 @@ class PostSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
-        fields = ('id', 'text', 'author', 'group', 'pub_date')
+        exclude = ('image',)
         model = Post
 
 
@@ -17,14 +17,14 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
 
     class Meta:
-        fields = ('id', 'author', 'post', 'text', 'created')
+        fields = '__all__'
         model = Comment
 
 
 class GroupSerializer(serializers.ModelSerializer):
     """Какие поля модели Группа отображаются."""
     class Meta:
-        fields = ('title', 'slug', 'description')
+        fields = '__all__'
         model = Group
 
 
